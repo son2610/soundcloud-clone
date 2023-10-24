@@ -1,4 +1,5 @@
 import ThemeRegistry from "@/components/theme-registry/theme.registry";
+import Header from "@/theme/header";
 
 export default function RootLayout({
     children,
@@ -8,7 +9,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <ThemeRegistry>{children}</ThemeRegistry>
+                <ThemeRegistry>
+                    <Header />
+                    {/* children chính là <outlet> trong react router. Next sẽ render tất cả các thẻ con ở dây */}
+                    {children}
+                </ThemeRegistry>
             </body>
         </html>
     );
