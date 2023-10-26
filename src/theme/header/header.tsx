@@ -20,6 +20,8 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Avatar, Button, CardMedia } from "@mui/material";
 import { inherits } from "util";
 import Container from "@mui/material/Container";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const pages = ["Playlist", "Likes", "Upload"];
 // xử lý tên làm avata
@@ -127,7 +129,14 @@ export default function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            <MenuItem onClick={handleMenuClose}>
+                <Link
+                    href={"/profile"}
+                    style={{ color: "unset", textDecoration: "none" }}
+                >
+                    Profile
+                </Link>
+            </MenuItem>
             <MenuItem onClick={handleMenuClose}>My account</MenuItem>
         </Menu>
     );
@@ -188,6 +197,10 @@ export default function Header() {
         </Menu>
     );
 
+    const router = useRouter();
+    const handleRedirectHome = () => {
+        router.push("/");
+    };
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ px: "2px", background: "#333333" }}>
@@ -212,12 +225,20 @@ export default function Header() {
                             }}
                             image="./logo.png"
                             alt="Logo"
+                            onClick={() => handleRedirectHome()}
                         />
                         <Typography
                             variant="h6"
                             noWrap
                             component="div"
-                            sx={{ display: { xs: "none", sm: "block" } }}
+                            sx={{
+                                display: {
+                                    xs: "none",
+                                    sm: "block",
+                                    cursor: "pointer",
+                                },
+                            }}
+                            onClick={() => handleRedirectHome()}
                         >
                             SOUNDCLOUD
                         </Typography>
@@ -263,6 +284,10 @@ export default function Header() {
                                 display: { xs: "none", md: "flex" },
                                 justifyContent: "right",
                                 gap: "10px",
+                                "> a": {
+                                    color: "unset",
+                                    textDecoration: "none",
+                                },
                             }}
                         >
                             {pages.map((page) => (
@@ -275,7 +300,15 @@ export default function Header() {
                                         display: "block",
                                     }}
                                 >
-                                    {page}
+                                    <Link
+                                        href={`/${page.toLowerCase()}`}
+                                        style={{
+                                            color: "unset",
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        {page}
+                                    </Link>
                                 </Button>
                             ))}
                         </Box>

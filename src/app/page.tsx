@@ -1,3 +1,10 @@
+import MainSlider from "@/theme/main/main.slider";
+import { Container } from "@mui/material";
+
 export default function HomePage() {
-    return <div>Hello world!!!</div>;
+    return (
+        <Container>
+            <MainSlider />
+        </Container>
+    );
 }
