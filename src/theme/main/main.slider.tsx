@@ -8,16 +8,23 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Box from "@mui/material/Box";
 import { Divider, IconButton } from "@mui/material";
 
-const MainSlider = () => {
+interface IProps {
+    dataProps: ITrackTop[];
+    titleProp: string;
+}
+const MainSlider = (prop: IProps) => {
     const settings: Settings = {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 4,
+        slidesToShow: 5,
         slidesToScroll: 1,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
     };
+
+    const { dataProps, titleProp } = prop;
+
     function NextArrow(props: any) {
         const { className, style, onClick } = props;
         return (
@@ -62,131 +69,31 @@ const MainSlider = () => {
             <Box
                 sx={{
                     margin: "0 50px",
-                    ".pd": { padding: "0 10px" },
-                    h3: {
-                        border: "1px solid #ccc",
+                    ".track": { padding: "0 10px" },
+                    h4: {
+                        // border: "1px solid #ccc",
                         padding: "20px",
-                        height: "200px",
+                        overflow: "hidden",
+                    },
+                    img: {
+                        wdth: 150,
+                        height: 150,
                     },
                 }}
             >
-                <h2> Multiple items </h2>
+                <h2> {titleProp} </h2>
                 <Slider {...settings}>
-                    <div className="pd">
-                        <h3>1</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>2</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>3</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>4</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>5</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>6</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>7</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>8</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>9</h3>
-                    </div>
-                </Slider>
-                <Divider />
-            </Box>
-
-            <Box
-                sx={{
-                    margin: "0 50px",
-                    ".pd": { padding: "0 10px" },
-                    h3: {
-                        border: "1px solid #ccc",
-                        padding: "20px",
-                        height: "200px",
-                    },
-                }}
-            >
-                <h2> Multiple items </h2>
-                <Slider {...settings}>
-                    <div className="pd">
-                        <h3>1</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>2</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>3</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>4</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>5</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>6</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>7</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>8</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>9</h3>
-                    </div>
-                </Slider>
-                <Divider />
-            </Box>
-
-            <Box
-                sx={{
-                    margin: "0 50px",
-                    ".pd": { padding: "0 10px" },
-                    h3: {
-                        border: "1px solid #ccc",
-                        padding: "20px",
-                        height: "200px",
-                    },
-                }}
-            >
-                <h2> Multiple items </h2>
-                <Slider {...settings}>
-                    <div className="pd">
-                        <h3>1</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>2</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>3</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>4</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>5</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>6</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>7</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>8</h3>
-                    </div>
-                    <div className="pd">
-                        <h3>9</h3>
-                    </div>
+                    {dataProps.map((track) => {
+                        return (
+                            <div className="track" key={track._id}>
+                                <img
+                                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track.imgUrl}`}
+                                />
+                                <h4>{track.title}</h4>
+                                <h5>{track.description}</h5>
+                            </div>
+                        );
+                    })}
                 </Slider>
                 <Divider />
             </Box>

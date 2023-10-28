@@ -26,7 +26,7 @@ export default function FooterPlayer() {
             >
                 <AudioPlayer
                     autoPlay={false}
-                    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracks/hoidanit.mp3`}
                     onPlay={(e) => console.log("onPlay")}
                     style={{ boxShadow: "none" }}
                 />
