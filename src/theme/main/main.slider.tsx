@@ -7,6 +7,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Box from "@mui/material/Box";
 import { Divider, IconButton } from "@mui/material";
+import Link from "next/link";
 
 interface IProps {
     dataProps: ITrackTop[];
@@ -89,7 +90,11 @@ const MainSlider = (prop: IProps) => {
                                 <img
                                     src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track.imgUrl}`}
                                 />
-                                <h4>{track.title}</h4>
+                                <Link
+                                    href={`/track/${track._id}?audio=${track.trackUrl}`}
+                                >
+                                    <h4>{track.title}</h4>
+                                </Link>
                                 <h5>{track.description}</h5>
                             </div>
                         );

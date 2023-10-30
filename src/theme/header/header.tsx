@@ -223,7 +223,7 @@ export default function Header() {
                                 width: "inherit",
                                 mr: "16px",
                             }}
-                            image="./logo.png"
+                            image={"/" + "logo.png"}
                             alt="Logo"
                             onClick={() => handleRedirectHome()}
                         />
