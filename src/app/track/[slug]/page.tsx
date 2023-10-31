@@ -1,5 +1,6 @@
 "use client";
 import WaveTrack from "@/components/track/wave.track";
+import { Container } from "@mui/material";
 // import { useSearchParams } from "next/navigation";
 // import { useRef } from "react";
 
@@ -16,9 +17,9 @@ function DetailTrack(props: any) {
     return (
         <div>
             DetailTrack
-            <div>
+            <Container>
                 <WaveTrack />
-            </div>
+            </Container>
         </div>
     );
 }
