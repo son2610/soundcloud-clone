@@ -6,6 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WaveSurferOptions } from "wavesurfer.js";
 import "./wave.scss";
+import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import { Tooltip, Zoom } from "@mui/material";
 
 const WaveTrack = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -55,7 +60,7 @@ const WaveTrack = () => {
             progressGradient.addColorStop(0, "#EE772F"); // Top color
             progressGradient.addColorStop(
                 (canvas.height * 0.7) / canvas.height,
-                "#EB4926"
+                "#FF4000"
             ); // Top color
             progressGradient.addColorStop(
                 (canvas.height * 0.7 + 1) / canvas.height,
@@ -101,7 +106,6 @@ const WaveTrack = () => {
         if (!wavesurfer) return;
         setIsPlaying(false);
 
-        //@ts-ignore
         waveform.addEventListener(
             "pointermove",
             (e) => (hover.style.width = `${e.offsetX}px`)
@@ -118,6 +122,10 @@ const WaveTrack = () => {
             wavesurfer.on("timeupdate", (duration) => {
                 setTimeState(formatTime(duration));
             }),
+            //handle play/pause when click
+            wavesurfer.on("interaction", () => {
+                wavesurfer.playPause();
+            }),
         ];
 
         return () => {
@@ -125,28 +133,118 @@ const WaveTrack = () => {
         };
     }, [wavesurfer]);
 
+    //comment
+    const arrComments = [
+        {
+            id: 1,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 10,
+            user: "username 1",
+            content: "just a comment1",
+        },
+        {
+            id: 2,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 30,
+            user: "username 2",
+            content: "just a comment3",
+        },
+        {
+            id: 3,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 50,
+            user: "username 3",
+            content: "just a comment3",
+        },
+    ];
+    const handleCaclLeft = (moment: number): string => {
+        const durationSong = 199;
+        const leftPercent = (moment / durationSong) * 100;
+        return `${leftPercent}%`;
+    };
+
+    //
     return (
         <>
-            <div ref={containerRef} id="waveform-container">
-                <div className="time">{timeState}</div>
-                <div className="duration">{durationState}</div>
-                <div id="mydiv">
-                    <div ref={hoverRef} className="hover-wave"></div>
+            <div className="container">
+                <div className="infomationSong">
+                    <div className="infomationSong__header">
+                        <div className="infomationSong__header--btn">
+                            <Box sx={{ "& > :not(style)": { m: 1 } }}>
+                                <Fab
+                                    sx={{
+                                        backgroundColor: "#FF3300",
+                                        color: "#fff",
+                                        "&.MuiButtonBase-root:hover": {
+                                            bgcolor: "#FFA480",
+                                        },
+                                    }}
+                                    aria-label="Play/Pause"
+                                    onClick={onPlayClick}
+                                >
+                                    {!isPlaying ? (
+                                        <PlayArrowIcon fontSize="large" />
+                                    ) : (
+                                        <PauseIcon fontSize="large" />
+                                    )}
+                                </Fab>
+                            </Box>
+                        </div>
+                        <div className="infomationSong__header--text">
+                            <h2>SoundCloud Name</h2>
+                            <p>Description</p>
+                        </div>
+                    </div>
+                    <div className="infomationSong__wake">
+                        <div ref={containerRef} id="waveform-container">
+                            <div className="time">{timeState}</div>
+                            <div className="duration">{durationState}</div>
+                            {/* <div id="mydiv"> */}
+                            <div ref={hoverRef} className="hover-wave"></div>
+                            {/* </div> */}
+                            <div className="overlay"></div>
+                            <div className="comments">
+                                {arrComments.map((item) => {
+                                    return (
+                                        <Tooltip
+                                            title={item.content}
+                                            arrow
+                                            TransitionComponent={Zoom}
+                                            leaveDelay={200}
+                                        >
+                                            <img
+                                                key={item.id}
+                                                src={item.avatar}
+                                                style={{
+                                                    left: handleCaclLeft(
+                                                        item.moment
+                                                    ),
+                                                }}
+                                                onPointerMove={(e) => {
+                                                    const hover =
+                                                        hoverRef.current!;
+                                                    console.log("check e: ", e);
+                                                    hover.style.width =
+                                                        handleCaclLeft(
+                                                            item.moment
+                                                        );
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div
-                    className="overlay"
-                    style={{
-                        position: "absolute",
-                        height: "30px",
-                        width: "100%",
-                        bottom: "0",
-                        background: "#ccc",
-                    }}
-                ></div>
+                <div className="imageSong">
+                    <img
+                        src="http://localhost:3000/image/default.png"
+                        width={250}
+                        height={250}
+                    />
+                </div>
             </div>
-            <button onClick={onPlayClick}>
-                {isPlaying ? "Pause" : "Play"}
-            </button>
         </>
     );
 };

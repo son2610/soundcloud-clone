@@ -2,30 +2,45 @@
     cursor: pointer;
     position: relative;
     &:hover {
-      .hover-wave {
-    opacity: 1;
-  }
+        .hover-wave {
+            opacity: 1;
+        }
     }
-  }
-  #mydiv { 
-    visibility:hidden;
-   }
-  .hover-wave {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 10;
-    pointer-events: none;
-    height: 100%;
-    width: 0;
-    mix-blend-mode: overlay;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
+    .hover-wave {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 10;
+        pointer-events: none;
+        height: 100%;
+        width: 0;
+        mix-blend-mode: overlay;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .overlay {
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        background: #ccc;
+    }
+    .comments {
+        position: relative;
+        img {
+            height: 20px;
+            width: 20px;
+            position: absolute;
+            z-index: 22;
+            top: 78px;
+            cursor: none;
+        }
+    }
+}
 
-  .time,
-  .duration {
+.time,
+.duration {
     position: absolute;
     z-index: 11;
     top: 50%;
@@ -35,10 +50,60 @@
     background: rgba(0, 0, 0, 0.75);
     padding: 2px;
     color: #ddd;
-  }
-  .time {
+}
+.time {
     left: 0;
-  }
-  .duration {
+}
+.duration {
     right: 0;
-  }
+}
+
+.container {
+    display: flex;
+    max-width: 1180px;
+    margin: auto;
+    background: linear-gradient(
+        to right,
+        rgb(229, 231, 235),
+        rgb(156, 163, 175),
+        rgb(75, 85, 99)
+    );
+    height: 380px;
+    flex-direction: row;
+    padding: 10px 20px;
+    .infomationSong {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        &__header {
+            height: auto;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: flex-start;
+            &--text {
+                h2 {
+                    background-color: #ccc;
+                }
+                p {
+                    display: block;
+                    background-color: #ccc;
+                    color: red;
+                }
+            }
+        }
+        &__wake {
+            height: auto;
+            width: 100%;
+        }
+    }
+    .imageSong {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30%;
+    }
+}
