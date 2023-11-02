@@ -1,0 +1,1 @@
+folder này để lưu trữ các wrapper bên phía client, khi render 1 component bên phía server mà ta muốn render 1 phần component là client component thì ta wrap bên ngoài component client đó ở trong server component

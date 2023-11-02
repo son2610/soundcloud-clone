@@ -22,6 +22,7 @@ import { inherits } from "util";
 import Container from "@mui/material/Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const pages = ["Playlist", "Likes", "Upload"];
 // xử lý tên làm avata
@@ -84,6 +85,12 @@ export default function Header() {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
         null
     );
+
+    //Hook truy cập và xác thực người dùng
+    //useSession sẽ trả về object data, sau đó ta gán data cho biến tên là session
+    const { data: session } = useSession();
+    // console.log("check data session ", session);
+    // console.log("check useSession ", useSession());
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -278,44 +285,48 @@ export default function Header() {
                             </MenuItem>
                         ))}
                     </Menu> */}
-                        <Box
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: "none", md: "flex" },
-                                justifyContent: "right",
-                                gap: "10px",
-                                "> a": {
-                                    color: "unset",
-                                    textDecoration: "none",
-                                },
-                            }}
-                        >
-                            {pages.map((page) => (
-                                <Button
-                                    key={page}
-                                    onClick={handleCloseNavMenu}
+                        {session ? (
+                            <>
+                                <Box
                                     sx={{
-                                        my: 2,
-                                        color: "white",
-                                        display: "block",
-                                    }}
-                                >
-                                    <Link
-                                        href={`/${page.toLowerCase()}`}
-                                        style={{
+                                        flexGrow: 1,
+                                        display: { xs: "none", md: "flex" },
+                                        justifyContent: "right",
+                                        gap: "10px",
+                                        "> a": {
                                             color: "unset",
                                             textDecoration: "none",
-                                        }}
-                                    >
-                                        {page}
-                                    </Link>
-                                </Button>
-                            ))}
-                        </Box>
-                        {/*  */}
-                        {/* <Box sx={{ flexGrow: 1 }} /> */}
-                        <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                            {/* <IconButton
+                                        },
+                                    }}
+                                >
+                                    {pages.map((page) => (
+                                        <Button
+                                            key={page}
+                                            onClick={handleCloseNavMenu}
+                                            sx={{
+                                                my: 2,
+                                                color: "white",
+                                                display: "block",
+                                            }}
+                                        >
+                                            <Link
+                                                href={`/${page.toLowerCase()}`}
+                                                style={{
+                                                    color: "unset",
+                                                    textDecoration: "none",
+                                                }}
+                                            >
+                                                {page}
+                                            </Link>
+                                        </Button>
+                                    ))}
+                                </Box>
+                                {/*  */}
+                                {/* <Box sx={{ flexGrow: 1 }} /> */}
+                                <Box
+                                    sx={{ display: { xs: "none", md: "flex" } }}
+                                >
+                                    {/* <IconButton
                             size="large"
                             aria-label="show 4 new mails"
                             color="inherit"
@@ -333,24 +344,54 @@ export default function Header() {
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton> */}
-                            <Avatar
-                                {...stringAvatar("Son Pham")}
-                                onClick={handleProfileMenuOpen}
-                                sx={{ cursor: "pointer" }}
-                            />
-                        </Box>
-                        <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                            <IconButton
-                                size="large"
-                                aria-label="show more"
-                                aria-controls={mobileMenuId}
-                                aria-haspopup="true"
-                                onClick={handleMobileMenuOpen}
-                                color="inherit"
+                                    <Avatar
+                                        {...stringAvatar("Son Pham")}
+                                        onClick={handleProfileMenuOpen}
+                                        sx={{ cursor: "pointer" }}
+                                    />
+                                </Box>
+                                <Box
+                                    sx={{ display: { xs: "flex", md: "none" } }}
+                                >
+                                    <IconButton
+                                        size="large"
+                                        aria-label="show more"
+                                        aria-controls={mobileMenuId}
+                                        aria-haspopup="true"
+                                        onClick={handleMobileMenuOpen}
+                                        color="inherit"
+                                    >
+                                        <MoreIcon />
+                                    </IconButton>
+                                </Box>
+                            </>
+                        ) : (
+                            <div
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                }}
                             >
-                                <MoreIcon />
-                            </IconButton>
-                        </Box>
+                                <Button
+                                    // onClick={handleCloseNavMenu}
+                                    sx={{
+                                        my: 2,
+                                        color: "white",
+                                    }}
+                                >
+                                    <Link
+                                        href={`/api/auth/signin`}
+                                        style={{
+                                            color: "unset",
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        Sign in
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
                     </Toolbar>
                 </Container>
             </AppBar>
