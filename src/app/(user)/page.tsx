@@ -1,6 +1,8 @@
 import MainSlider from "@/theme/main/main.slider";
 import { sendRequest } from "@/utils/api";
 import { Container } from "@mui/material";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function HomePage() {
     //     const res = await fetch("http://localhost:8000/api/v1/tracks/top", {
@@ -14,6 +16,10 @@ export default async function HomePage() {
     //         }),
     //     });
     //     console.log("Check res data", await res.json());
+
+    //check session user loggin
+    const session = await getServerSession(authOptions);
+    console.log("check session", session);
 
     const chill = await sendRequest<IBackendRes<ITrackTop[]>>({
         url: "http://localhost:8000/api/v1/tracks/top",

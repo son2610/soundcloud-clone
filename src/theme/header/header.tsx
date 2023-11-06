@@ -11,18 +11,18 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
+
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Avatar, Button, CardMedia } from "@mui/material";
-import { inherits } from "util";
+
 import Container from "@mui/material/Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const pages = ["Playlist", "Likes", "Upload"];
 // xử lý tên làm avata
@@ -89,7 +89,7 @@ export default function Header() {
     //Hook truy cập và xác thực người dùng
     //useSession sẽ trả về object data, sau đó ta gán data cho biến tên là session
     const { data: session } = useSession();
-    // console.log("check data session ", session);
+    console.log("check data session in header ", session);
     // console.log("check useSession ", useSession());
 
     const handleCloseNavMenu = () => {
@@ -145,6 +145,14 @@ export default function Header() {
                 </Link>
             </MenuItem>
             <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem
+                onClick={() => {
+                    handleMenuClose();
+                    signOut();
+                }}
+            >
+                Log out
+            </MenuItem>
         </Menu>
     );
 
@@ -285,42 +293,42 @@ export default function Header() {
                             </MenuItem>
                         ))}
                     </Menu> */}
-                        {session ? (
-                            <>
-                                <Box
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", md: "flex" },
+                                justifyContent: "right",
+                                gap: "10px",
+                                "> a": {
+                                    color: "unset",
+                                    textDecoration: "none",
+                                },
+                            }}
+                        >
+                            {pages.map((page) => (
+                                <Button
+                                    key={page}
+                                    onClick={handleCloseNavMenu}
                                     sx={{
-                                        flexGrow: 1,
-                                        display: { xs: "none", md: "flex" },
-                                        justifyContent: "right",
-                                        gap: "10px",
-                                        "> a": {
-                                            color: "unset",
-                                            textDecoration: "none",
-                                        },
+                                        my: 2,
+                                        color: "white",
+                                        display: "block",
                                     }}
                                 >
-                                    {pages.map((page) => (
-                                        <Button
-                                            key={page}
-                                            onClick={handleCloseNavMenu}
-                                            sx={{
-                                                my: 2,
-                                                color: "white",
-                                                display: "block",
-                                            }}
-                                        >
-                                            <Link
-                                                href={`/${page.toLowerCase()}`}
-                                                style={{
-                                                    color: "unset",
-                                                    textDecoration: "none",
-                                                }}
-                                            >
-                                                {page}
-                                            </Link>
-                                        </Button>
-                                    ))}
-                                </Box>
+                                    <Link
+                                        href={`/${page.toLowerCase()}`}
+                                        style={{
+                                            color: "unset",
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        {page}
+                                    </Link>
+                                </Button>
+                            ))}
+                        </Box>
+                        {session ? (
+                            <>
                                 {/*  */}
                                 {/* <Box sx={{ flexGrow: 1 }} /> */}
                                 <Box
@@ -350,7 +358,9 @@ export default function Header() {
                                         sx={{ cursor: "pointer" }}
                                     />
                                 </Box>
-                                <Box
+
+                                {/* Box mobile reponsive */}
+                                {/* <Box
                                     sx={{ display: { xs: "flex", md: "none" } }}
                                 >
                                     <IconButton
@@ -363,34 +373,36 @@ export default function Header() {
                                     >
                                         <MoreIcon />
                                     </IconButton>
-                                </Box>
+                                </Box> */}
                             </>
                         ) : (
-                            <div
-                                style={{
-                                    width: "100%",
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                }}
+                            <
+                                // style={{
+                                //     display: "flex",
+                                //     justifyContent: "flex-end",
+                                // }}
                             >
                                 <Button
                                     // onClick={handleCloseNavMenu}
                                     sx={{
                                         my: 2,
                                         color: "white",
+                                        display: "block",
+                                        backgroundColor: "#ccc",
                                     }}
                                 >
                                     <Link
-                                        href={`/api/auth/signin`}
+                                        href={`#`}
                                         style={{
                                             color: "unset",
                                             textDecoration: "none",
                                         }}
+                                        onClick={() => signIn()}
                                     >
                                         Sign in
                                     </Link>
                                 </Button>
-                            </div>
+                            </>
                         )}
                     </Toolbar>
                 </Container>
