@@ -21,6 +21,7 @@ export default function InputFileUpload() {
             component="label"
             variant="contained"
             startIcon={<CloudUploadIcon />}
+            onClick={(event) => event.preventDefault()}
         >
             Upload file
             <VisuallyHiddenInput type="file" />
