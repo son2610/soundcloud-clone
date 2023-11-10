@@ -392,12 +392,12 @@ export default function Header() {
                                     }}
                                 >
                                     <Link
-                                        href={`#`}
+                                        href={`/auth/signin`}
                                         style={{
                                             color: "unset",
                                             textDecoration: "none",
                                         }}
-                                        onClick={() => signIn()}
+                                        // onClick={() => signIn()}
                                     >
                                         Sign in
                                     </Link>

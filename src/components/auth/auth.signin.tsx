@@ -10,6 +10,7 @@ import {
     Container,
     Divider,
     Stack,
+    Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -17,30 +18,51 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
+import { signIn } from "next-auth/react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Snackbar from "@mui/material/Snackbar";
 
 function AuthSignIn() {
-    const [email, setEmail] = useState("");
+    const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+    const router = useRouter();
 
-    const handleSubmit = (event: React.FormEvent<EventTarget>) => {
+    const [isOpenAlert, setisOpenAlert] = useState<boolean>(false);
+    const [messegeAlert, setMessegeAlert] = useState<string>("");
+
+    const handleSubmit = async (event: React.FormEvent<EventTarget>) => {
         event.preventDefault();
 
         setEmailError(false);
         setPasswordError(false);
 
-        if (email == "") {
+        if (username == "") {
             setEmailError(true);
         }
         if (password == "") {
             setPasswordError(true);
         }
 
-        if (email && password) {
-            console.log(email, password);
-            setEmail("");
-            setPassword("");
+        if (username && password) {
+            console.log(username, password);
+
+            const res = await signIn("credentials", {
+                username: username,
+                password: password,
+                redirect: false,
+            });
+            console.log("check res ", res);
+            if (!res?.error) {
+                //redirect to home
+                router.push("/");
+            } else {
+                setisOpenAlert(true);
+                setMessegeAlert(res.error);
+            }
         }
     };
 
@@ -73,6 +95,19 @@ function AuthSignIn() {
                             autoComplete="off"
                             onSubmit={handleSubmit}
                         >
+                            <Link href="/">
+                                <ArrowBackIcon
+                                    style={{
+                                        color: "blue",
+                                        display: "block",
+                                        position: "relative",
+                                        left: "0px",
+                                        width: "20px",
+                                        cursor: "pointer",
+                                    }}
+                                />
+                            </Link>
+
                             <Container
                                 sx={{
                                     display: "flex",
@@ -88,14 +123,14 @@ function AuthSignIn() {
                             </Container>
                             <TextField
                                 label="Username"
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => setUserName(e.target.value)}
                                 required
                                 variant="outlined"
                                 color="primary"
-                                type="email"
+                                type="username"
                                 sx={{ mb: 3 }}
                                 fullWidth
-                                value={email}
+                                value={username}
                                 error={emailError}
                                 helperText={
                                     emailError ? "User do not empty" : ""
@@ -156,6 +191,7 @@ function AuthSignIn() {
                                     aria-label="github"
                                     color="primary"
                                     size="large"
+                                    onClick={() => signIn("github")}
                                 >
                                     <GitHubIcon fontSize="inherit" />
                                 </IconButton>
@@ -170,6 +206,23 @@ function AuthSignIn() {
                         </Box>
                     </Grid>
                 </Grid>
+                <Snackbar
+                    open={isOpenAlert}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    // autoHideDuration={6000}
+                    // onClose={false}
+                >
+                    <Alert
+                        // onClose={false}
+                        severity="error"
+                        sx={{ width: "100%" }}
+                        onClose={() => {
+                            setisOpenAlert(false);
+                        }}
+                    >
+                        {messegeAlert}
+                    </Alert>
+                </Snackbar>
             </Paper>
         </>
     );

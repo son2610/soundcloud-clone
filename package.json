@@ -1,7 +1,7 @@
 {
   "name": "nextjs-mui-ts-template-by-hoidanit",
-  "author": "Hỏi Dân IT với Eric",
-  "description": "https://www.youtube.com/@hoidanit",
+  "author": "Private Development",
+  "description": "SoundCloud with NextJS",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -18,11 +18,13 @@
     "@mui/icons-material": "5.14.7",
     "@mui/material": "5.14.7",
     "@types/react-slick": "^0.23.11",
+    "axios": "^1.6.0",
     "next": "13.4.19",
     "next-auth": "^4.24.4",
     "query-string": "^8.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-h5-audio-player": "^3.9.0",
     "react-slick": "^0.29.0",
     "sass": "^1.69.5",
