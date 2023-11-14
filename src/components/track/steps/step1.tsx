@@ -10,17 +10,19 @@ import axios from "axios";
 interface IProps {
     setValue: (value: number) => void;
     setTrackUpload: any;
+    trackUpload: any;
 }
 function Step1(props: IProps) {
     const { data: session } = useSession();
+    const { trackUpload } = props;
     // const [percent, setPercent] = React.useState(0);
 
     const onDrop = useCallback(
         async (acceptedFiles: FileWithPath[]) => {
             // Do something with the files
             const audio = acceptedFiles[0];
-            const formData = new FormData();
             props.setValue(1);
+            const formData = new FormData();
             formData.append("fileUpload", audio);
             if (acceptedFiles && acceptedFiles[0]) {
                 try {
@@ -41,12 +43,17 @@ function Step1(props: IProps) {
                                 );
                                 // setPercent(percentCompleted);
                                 props.setTrackUpload({
+                                    ...trackUpload,
                                     fileName: acceptedFiles[0].name,
                                     percent: percentCompleted,
                                 });
                             },
                         }
                     );
+                    props.setTrackUpload((prevState: any) => ({
+                        ...prevState,
+                        uploadedTrackName: res.data.data.fileName,
+                    }));
                     console.log("check percentCompleted", percentCompleted);
                 } catch (err) {
                     // @ts-ignore

@@ -11,6 +11,9 @@ import Box from "@mui/material/Box";
 import { Button, Container, MenuItem } from "@mui/material";
 import InputFileUpload from "./InputFileUpload";
 import TextField from "@mui/material/TextField";
+import { sendRequest } from "@/utils/api";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/utils/toast";
 
 function LinearProgressWithLabel(
     props: LinearProgressProps & { value: number }
@@ -63,12 +66,64 @@ interface IProps {
     trackUpload: {
         fileName: string;
         percent: number;
+        uploadedTrackName: string;
     };
+    setValue: (value: number) => void;
+}
+
+interface INewTrackInfo {
+    title: string;
+    description: string;
+    trackUrl: string;
+    imgUrl: string;
+    category: string;
 }
 
 export default function Step2(props: IProps) {
-    const { trackUpload } = props;
-    console.log("check track upload step 2", trackUpload);
+    const [infoTrack, setInfoTrack] = React.useState<INewTrackInfo>({
+        title: "",
+        description: "",
+        trackUrl: "",
+        imgUrl: "",
+        category: "",
+    });
+    const { trackUpload, setValue } = props;
+    React.useEffect(() => {
+        if (trackUpload && trackUpload.uploadedTrackName) {
+            setInfoTrack({
+                ...infoTrack,
+                trackUrl: trackUpload.uploadedTrackName,
+            });
+        }
+    }, [trackUpload]);
+    // console.log("check track upload step 2", trackUpload);
+    const { data: session } = useSession();
+    const toast = useToast();
+    const handleSubmitForm = async () => {
+        // console.log("check info track onchage: ", infoTrack);
+        const res = await sendRequest<IBackendRes<ITrackTop[]>>({
+            url: "http://localhost:8000/api/v1/tracks",
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${session?.access_token}`, // notice the Bearer before your token
+            },
+            body: {
+                title: infoTrack.title,
+                description: infoTrack.description,
+                trackUrl: infoTrack.trackUrl,
+                imgUrl: infoTrack.imgUrl,
+                category: infoTrack.category,
+            },
+        });
+        if (res.data) {
+            // alert("success " + res.data);
+            toast.success(res.message);
+            setValue(0);
+        } else {
+            // alert(res.message);
+            toast.error(res.message);
+        }
+    };
     return (
         <Paper
             sx={{
@@ -84,18 +139,31 @@ export default function Step2(props: IProps) {
             <Grid container spacing={2}>
                 <Grid container item>
                     <div>{trackUpload.fileName}</div>
-                    <LinearWithValueLabel trackUpload={trackUpload} />
+                    <LinearWithValueLabel
+                        trackUpload={trackUpload}
+                        setValue={setValue}
+                    />
                 </Grid>
                 {/* image */}
                 <Grid item md={4} xs={6}>
-                    <Container>
+                    <Container
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                            gap: "20px",
+                        }}
+                    >
                         <Img
                             alt="complex"
-                            src="/static/images/grid/complex.jpg"
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${infoTrack.imgUrl}`}
                             width={"200px"}
                             height={"200px"}
                         />
-                        <InputFileUpload />
+                        <InputFileUpload
+                            setInfoTrack={setInfoTrack}
+                            infoTrack={infoTrack}
+                        />
                     </Container>
                 </Grid>
                 {/* information */}
@@ -107,12 +175,26 @@ export default function Step2(props: IProps) {
                                 label="Title"
                                 id="fullWidth"
                                 margin="dense"
+                                value={infoTrack.title}
+                                onChange={(e) =>
+                                    setInfoTrack({
+                                        ...infoTrack,
+                                        title: e.target.value,
+                                    })
+                                }
                             />
                             <TextField
                                 fullWidth
                                 label="Description"
                                 id="fullWidth"
                                 margin="dense"
+                                value={infoTrack.description}
+                                onChange={(e) =>
+                                    setInfoTrack({
+                                        ...infoTrack,
+                                        description: e.target.value,
+                                    })
+                                }
                             />
                             <TextField
                                 fullWidth
@@ -122,6 +204,13 @@ export default function Step2(props: IProps) {
                                 label="Select"
                                 defaultValue="CHILL"
                                 helperText="Please select your category"
+                                value={infoTrack.category}
+                                onChange={(e) =>
+                                    setInfoTrack({
+                                        ...infoTrack,
+                                        category: e.target.value,
+                                    })
+                                }
                             >
                                 {categoryTrack.map((option) => (
                                     <MenuItem
@@ -138,7 +227,11 @@ export default function Step2(props: IProps) {
                                 justifyContent="center"
                                 alignItems="center"
                             >
-                                <Button variant="outlined" sx={{ mt: "20px" }}>
+                                <Button
+                                    variant="outlined"
+                                    sx={{ mt: "20px" }}
+                                    onClick={() => handleSubmitForm()}
+                                >
                                     Save
                                 </Button>
                             </Grid>

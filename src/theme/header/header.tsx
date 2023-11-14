@@ -16,13 +16,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import { Avatar, Button, CardMedia } from "@mui/material";
 
 import Container from "@mui/material/Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 const pages = ["Playlist", "Likes", "Upload"];
 // xử lý tên làm avata
@@ -138,7 +137,7 @@ export default function Header() {
         >
             <MenuItem onClick={handleMenuClose}>
                 <Link
-                    href={"/profile"}
+                    href={`/profile/${session?.user._id}`}
                     style={{ color: "unset", textDecoration: "none" }}
                 >
                     Profile
@@ -316,7 +315,11 @@ export default function Header() {
                                     }}
                                 >
                                     <Link
-                                        href={`/${page.toLowerCase()}`}
+                                        href={
+                                            page === "Upload"
+                                                ? `/track/${page.toLowerCase()}`
+                                                : `/${page.toLowerCase()}`
+                                        }
                                         style={{
                                             color: "unset",
                                             textDecoration: "none",
