@@ -40,7 +40,7 @@ export default async function HomePage() {
     });
 
     return (
-        <Container>
+        <Container style={{ marginBottom: "50px" }}>
             <MainSlider dataProps={chill?.data ?? []} titleProp="Top Chill" />
             <MainSlider
                 dataProps={workOut?.data ?? []}

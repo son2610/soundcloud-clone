@@ -39,11 +39,11 @@ async function profilePage({ params }: { params: { slug: string } }) {
                     );
                 })}
 
-                <Grid xs={6}>
+                {/* <Grid xs={6}>
                     <Item>
                         <ProfileTrackElement data={data[0]} />
                     </Item>
-                </Grid>
+                </Grid> */}
                 {/* @ts-ignore */}
             </Grid>
         </Container>

@@ -11,10 +11,18 @@ import Typography from "@mui/material/Typography";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
+import { TrackContext } from "@/app/lib/track.wrapper";
+import PauseIcon from "@mui/icons-material/Pause";
 
 export default function ProfileTrackElement(props: any) {
     const theme = useTheme();
     const { data } = props;
+    const { currentTrack, setCurrentTrack } = React.useContext(
+        TrackContext
+    ) as ITrackContext;
+
+    //test
+    // const [toggle, setToggle] = React.useState(false);
 
     return (
         <Card sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -41,9 +49,57 @@ export default function ProfileTrackElement(props: any) {
                             <SkipPreviousIcon />
                         )}
                     </IconButton>
-                    <IconButton aria-label="play/pause">
-                        <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-                    </IconButton>
+                    {/* <IconButton
+                        aria-label="play/pause"
+                        onClick={() => {
+                            setCurrentTrack({ ...data, isPlaying: toggle });
+                            setToggle(!toggle);
+                        }}
+                    > */}
+                    {
+                        // play button
+                        (data._id !== currentTrack._id ||
+                            (data._id === currentTrack._id &&
+                                currentTrack.isPlaying === false)) && (
+                            <IconButton
+                                aria-label="play/pause"
+                                onClick={() => {
+                                    setCurrentTrack({
+                                        ...data,
+                                        isPlaying: true,
+                                    });
+                                    // setToggle(!toggle);
+                                }}
+                            >
+                                <PlayArrowIcon sx={{ height: 38, width: 38 }} />
+                            </IconButton>
+                        )
+                    }
+                    {
+                        /* pause button */
+                        data._id === currentTrack._id &&
+                            currentTrack.isPlaying === true && (
+                                <IconButton
+                                    aria-label="play/pause"
+                                    onClick={() => {
+                                        setCurrentTrack({
+                                            ...data,
+                                            isPlaying: false,
+                                        });
+                                        // setToggle(!toggle);
+                                    }}
+                                >
+                                    <PauseIcon sx={{ height: 38, width: 38 }} />
+                                </IconButton>
+                            )
+                    }
+                    {/* {!currentTrack.isPlaying ? (
+                            <PlayArrowIcon sx={{ height: 38, width: 38 }} />
+                        ) : (
+                            <PauseIcon sx={{ height: 38, width: 38 }} />
+                        )} */}
+                    {/* <PlayArrowIcon sx={{ height: 38, width: 38 }} /> */}
+                    {/* </IconButton> */}
                     <IconButton aria-label="next">
                         {theme.direction === "rtl" ? (
                             <SkipPreviousIcon />
