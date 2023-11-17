@@ -11,6 +11,7 @@ import Fab from "@mui/material/Fab";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import { Tooltip, Zoom } from "@mui/material";
+import { sendRequest } from "@/utils/api";
 
 const WaveTrack = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +23,9 @@ const WaveTrack = () => {
     const fileName = searchParams.get("audio");
     //
     const [isPlaying, setIsPlaying] = useState(false);
+
+    //to get id from url
+    const id = searchParams.get("id");
 
     const optionMemo = useMemo((): Omit<WaveSurferOptions, "container"> => {
         let gradient, progressGradient;
@@ -102,6 +106,10 @@ const WaveTrack = () => {
 
         return `${minutes}:${paddedSeconds}`;
     };
+
+    //save infor track data when fetch data
+    const [trackInfo, setTrackInfo] = useState<ITrackTop | null>(null);
+
     useEffect(() => {
         if (!wavesurfer) return;
         setIsPlaying(false);
@@ -132,6 +140,19 @@ const WaveTrack = () => {
             subscriptions.forEach((unsub) => unsub());
         };
     }, [wavesurfer]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await sendRequest<IBackendRes<ITrackTop>>({
+                url: `http://localhost:8000/api/v1/tracks/${id}`,
+                method: "GET",
+            });
+            if (res && res.data) {
+                setTrackInfo(res.data);
+            }
+        };
+        fetchData();
+    }, [id]);
 
     //comment
     const arrComments = [
@@ -191,8 +212,8 @@ const WaveTrack = () => {
                             </Box>
                         </div>
                         <div className="infomationSong__header--text">
-                            <h2>SoundCloud Name</h2>
-                            <p>Description</p>
+                            <h2>{`${trackInfo?.title}`}</h2>
+                            <p>{`${trackInfo?.description}`}</p>
                         </div>
                     </div>
                     <div className="infomationSong__wake">
@@ -211,6 +232,7 @@ const WaveTrack = () => {
                                             arrow
                                             TransitionComponent={Zoom}
                                             leaveDelay={200}
+                                            key={item.id}
                                         >
                                             <img
                                                 key={item.id}

@@ -2,7 +2,7 @@
 import { TrackContext } from "@/app/lib/track.wrapper";
 import { useHasMounted } from "@/utils/customHook";
 import { AppBar, Container } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 
@@ -16,13 +16,24 @@ import "react-h5-audio-player/lib/styles.css";
 // });
 
 export default function FooterPlayer() {
-    const hasMounted = useHasMounted();
-    if (!hasMounted) return <></>;
-    // ép kiểu useContext có định dạng là ItrackContext để gán cho 2 state global
+    const playPauseRef = useRef(null);
     const { currentTrack, setCurrentTrack } = useContext(
         TrackContext
     ) as ITrackContext;
+    const hasMounted = useHasMounted();
+    if (!hasMounted) return <></>;
+    // ép kiểu useContext có định dạng là ItrackContext để gán cho 2 state global
+
     console.log("check track context", currentTrack);
+
+    // @ts-ignore
+    if (currentTrack.isPlaying) {
+        // @ts-ignore
+        playPauseRef?.current?.audio?.current?.play();
+    } else {
+        // @ts-ignore
+        playPauseRef?.current?.audio?.current?.pause();
+    }
     return (
         <AppBar
             position="fixed"
@@ -54,9 +65,15 @@ export default function FooterPlayer() {
                 <AudioPlayer
                     layout="horizontal-reverse"
                     autoPlay={false}
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracks/hoidanit.mp3`}
-                    onPlay={(e) => console.log("onPlay")}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracks/${currentTrack.trackUrl}`}
+                    onPlay={(e) =>
+                        setCurrentTrack({ ...currentTrack, isPlaying: true })
+                    }
                     style={{ boxShadow: "none" }}
+                    ref={playPauseRef}
+                    onPause={(e) => {
+                        setCurrentTrack({ ...currentTrack, isPlaying: false });
+                    }}
                 />
                 <div
                     style={{
@@ -68,8 +85,28 @@ export default function FooterPlayer() {
                         minWidth: "100px",
                     }}
                 >
-                    <div style={{ color: "#ccc" }}> Artis</div>
-                    <div style={{ color: "black" }}>Song</div>
+                    <div
+                        style={{
+                            color: "#ccc",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            width: "50px",
+                        }}
+                    >
+                        {`${currentTrack.description}`}
+                    </div>
+                    <div
+                        style={{
+                            color: "black",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            width: "100px",
+                        }}
+                    >
+                        {`${currentTrack.title}`}
+                    </div>
                 </div>
             </Container>
         </AppBar>
