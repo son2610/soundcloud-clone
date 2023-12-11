@@ -22,6 +22,7 @@ import Container from "@mui/material/Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { fetchDefaultImage } from "@/utils/api";
 
 const pages = ["Playlist", "Likes", "Upload"];
 // xử lý tên làm avata
@@ -355,10 +356,21 @@ export default function Header() {
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton> */}
-                                    <Avatar
+                                    {/* <Avatar
                                         {...stringAvatar("Son Pham")}
                                         onClick={handleProfileMenuOpen}
                                         sx={{ cursor: "pointer" }}
+                                    /> */}
+                                    <img
+                                        onClick={handleProfileMenuOpen}
+                                        style={{
+                                            cursor: "pointer",
+                                            height: "35px",
+                                            width: "35px",
+                                        }}
+                                        src={fetchDefaultImage(
+                                            session.user.type
+                                        )}
                                     />
                                 </Box>
 

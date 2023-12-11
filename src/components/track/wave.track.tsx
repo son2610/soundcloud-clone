@@ -2,7 +2,7 @@
 
 import { useWavesurfer } from "@/utils/customHook";
 // import WaveTrack from "@/components/track/wave.track";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WaveSurferOptions } from "wavesurfer.js";
 import "./wave.scss";
@@ -11,9 +11,18 @@ import Fab from "@mui/material/Fab";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import { Tooltip, Zoom } from "@mui/material";
-import { sendRequest } from "@/utils/api";
+import { useTrackContext } from "@/app/lib/track.wrapper";
+import { fetchDefaultImage, sendRequest } from "@/utils/api";
+import CommentTrack from "./comment.track";
+import LikeTrack from "./steps/like.track";
 
-const WaveTrack = () => {
+interface IProps {
+    track: ITrackTop | null;
+    arrComment: IComment[];
+}
+const WaveTrack = (props: IProps) => {
+    const firstViewRef = useRef(true);
+    const { track, arrComment } = props;
     const containerRef = useRef<HTMLDivElement>(null);
     const [timeState, setTimeState] = useState<string>("0:00");
     const [durationState, setDurationState] = useState<string>("0:00");
@@ -24,8 +33,15 @@ const WaveTrack = () => {
     //
     const [isPlaying, setIsPlaying] = useState(false);
 
-    //to get id from url
-    const id = searchParams.get("id");
+    //
+    const { currentTrack, setCurrentTrack } =
+        useTrackContext() as ITrackContext;
+
+    //
+    const router = useRouter();
+
+    // //to get id from url
+    // const id = searchParams.get("id");
 
     const optionMemo = useMemo((): Omit<WaveSurferOptions, "container"> => {
         let gradient, progressGradient;
@@ -88,11 +104,13 @@ const WaveTrack = () => {
             barWidth: 3,
         };
     }, []);
+
     const wavesurfer = useWavesurfer(containerRef, optionMemo);
     // On play button click
     const onPlayClick = useCallback(() => {
         if (wavesurfer) {
             wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
+            console.log("Check loop play click");
         }
     }, [wavesurfer]);
 
@@ -108,7 +126,7 @@ const WaveTrack = () => {
     };
 
     //save infor track data when fetch data
-    const [trackInfo, setTrackInfo] = useState<ITrackTop | null>(null);
+    // const [track, settrack] = useState<ITrackTop | null>(null);
 
     useEffect(() => {
         if (!wavesurfer) return;
@@ -141,47 +159,58 @@ const WaveTrack = () => {
         };
     }, [wavesurfer]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await sendRequest<IBackendRes<ITrackTop>>({
-                url: `http://localhost:8000/api/v1/tracks/${id}`,
-                method: "GET",
-            });
-            if (res && res.data) {
-                setTrackInfo(res.data);
-            }
-        };
-        fetchData();
-    }, [id]);
+    // const arrComments = [
+    //     {
+    //         _id: 1,
+    //         avatar: "http://localhost:8000/images/chill1.png",
+    //         moment: 10,
+    //         user: "username 1",
+    //         content: "just a comment1",
+    //     },
+    //     {
+    //         _id: 2,
+    //         avatar: "http://localhost:8000/images/chill1.png",
+    //         moment: 30,
+    //         user: "username 2",
+    //         content: "just a comment3",
+    //     },
+    //     {
+    //         _id: 3,
+    //         avatar: "http://localhost:8000/images/chill1.png",
+    //         moment: 50,
+    //         user: "username 3",
+    //         content: "just a comment3",
+    //     },
+    // ];
 
-    //comment
-    const arrComments = [
-        {
-            id: 1,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 10,
-            user: "username 1",
-            content: "just a comment1",
-        },
-        {
-            id: 2,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 30,
-            user: "username 2",
-            content: "just a comment3",
-        },
-        {
-            id: 3,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 50,
-            user: "username 3",
-            content: "just a comment3",
-        },
-    ];
     const handleCaclLeft = (moment: number): string => {
-        const durationSong = 199;
+        const durationSong = wavesurfer?.getDuration() ?? 0;
         const leftPercent = (moment / durationSong) * 100;
         return `${leftPercent}%`;
+    };
+
+    useEffect(() => {
+        if (currentTrack.isPlaying && wavesurfer) wavesurfer.pause();
+    }, [currentTrack]);
+
+    useEffect(() => {
+        if (track?._id && !currentTrack._id)
+            setCurrentTrack({ ...track, isPlaying: false });
+    }, [track]);
+
+    const handleIncreaseView = async () => {
+        if (firstViewRef.current) {
+            console.log("Next co chay vao day khong the");
+            await sendRequest<IBackendRes<IModelPaginate<ITrackLike>>>({
+                url: `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/tracks/increase-view`,
+                method: "POST",
+                body: {
+                    trackId: track?._id,
+                },
+            });
+            router.refresh();
+            firstViewRef.current = false;
+        }
     };
 
     //
@@ -201,7 +230,16 @@ const WaveTrack = () => {
                                         },
                                     }}
                                     aria-label="Play/Pause"
-                                    onClick={onPlayClick}
+                                    onClick={() => {
+                                        onPlayClick();
+                                        handleIncreaseView();
+                                        if (track && wavesurfer) {
+                                            setCurrentTrack({
+                                                ...currentTrack,
+                                                isPlaying: false,
+                                            });
+                                        }
+                                    }}
                                 >
                                     {!isPlaying ? (
                                         <PlayArrowIcon fontSize="large" />
@@ -212,8 +250,8 @@ const WaveTrack = () => {
                             </Box>
                         </div>
                         <div className="infomationSong__header--text">
-                            <h2>{`${trackInfo?.title}`}</h2>
-                            <p>{`${trackInfo?.description}`}</p>
+                            <h2>{`${track?.title}`}</h2>
+                            <p>{`${track?.description}`}</p>
                         </div>
                     </div>
                     <div className="infomationSong__wake">
@@ -225,18 +263,20 @@ const WaveTrack = () => {
                             {/* </div> */}
                             <div className="overlay"></div>
                             <div className="comments">
-                                {arrComments.map((item) => {
+                                {arrComment.map((item) => {
                                     return (
                                         <Tooltip
                                             title={item.content}
                                             arrow
                                             TransitionComponent={Zoom}
                                             leaveDelay={200}
-                                            key={item.id}
+                                            key={item._id}
                                         >
                                             <img
-                                                key={item.id}
-                                                src={item.avatar}
+                                                key={item._id}
+                                                src={fetchDefaultImage(
+                                                    item?.user?.type
+                                                )}
                                                 style={{
                                                     left: handleCaclLeft(
                                                         item.moment
@@ -260,12 +300,30 @@ const WaveTrack = () => {
                     </div>
                 </div>
                 <div className="imageSong">
-                    <img
-                        src="http://localhost:3000/image/default.png"
-                        width={250}
-                        height={250}
-                    />
+                    {track?.imgUrl ? (
+                        <img
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track?.imgUrl}`}
+                            width={250}
+                            height={250}
+                        />
+                    ) : (
+                        <div
+                            style={{
+                                background: "#ccc",
+                                width: "250px",
+                                height: "250x",
+                            }}
+                        ></div>
+                    )}
                 </div>
+            </div>
+            <div style={{ marginTop: "50px" }}>
+                <LikeTrack track={track} />
+                <CommentTrack
+                    arrComment={arrComment}
+                    track={track}
+                    wavesurfer={wavesurfer}
+                />
             </div>
         </>
     );

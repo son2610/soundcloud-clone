@@ -11,6 +11,7 @@ export default function RootLayout({
             <Header />
             {/* children chính là <outlet> trong react router. Next sẽ render tất cả các thẻ con ở dây */}
             {children}
+            <div style={{ marginBottom: "100px" }}></div>
             <FooterPlayer />
         </>
     );
