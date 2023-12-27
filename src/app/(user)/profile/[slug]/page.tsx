@@ -3,7 +3,7 @@
 import ProfileTrackElement from "@/components/header/profile.track";
 import { sendRequest } from "@/utils/api";
 import { styled } from "@mui/material/styles";
-import { Box, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import Paper from "@mui/material/Paper";
 
