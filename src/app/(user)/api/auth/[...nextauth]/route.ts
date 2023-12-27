@@ -3,11 +3,12 @@ import NextAuth, { AuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt/types";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 // component dùng để liên kết với các provider để xác thực người dùng, chú ý hàm export { handler as GET, handler as POST }-> phải có cái này mới dùng được
 export const authOptions: AuthOptions = {
     // Configure one or more authentication providers
-    secret: process.env.GITHUB_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             // The name to display on the sign in form (e.g. "Sign in with...")
@@ -26,7 +27,7 @@ export const authOptions: AuthOptions = {
             },
             async authorize(credentials, req) {
                 const res = await sendRequest<IBackendRes<JWT>>({
-                    url: "http://localhost:8000/api/v1/auth/login",
+                    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/auth/login`,
                     method: "POST",
                     body: {
                         username: credentials?.username,
@@ -53,6 +54,10 @@ export const authOptions: AuthOptions = {
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
         }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_ID!,
+            clientSecret: process.env.GOOGLE_SECRET!,
+        }),
 
         // ...add more providers here
     ],
@@ -64,7 +69,7 @@ export const authOptions: AuthOptions = {
             // Persist the OAuth access_token and or the user id to the token right after signin
             if (trigger === "signIn" && account?.provider !== "credentials") {
                 const res = await sendRequest<IBackendRes<JWT>>({
-                    url: "http://localhost:8000/api/v1/auth/social-media",
+                    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/auth/social-media`,
                     method: "POST",
                     body: {
                         type: account?.provider.toLocaleUpperCase(),

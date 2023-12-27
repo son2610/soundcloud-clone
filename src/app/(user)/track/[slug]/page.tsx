@@ -1,6 +1,7 @@
 import WaveTrack from "@/components/track/wave.track";
 import { sendRequest } from "@/utils/api";
 import { Container } from "@mui/material";
+import { notFound } from "next/navigation";
 // import { useSearchParams } from "next/navigation";
 // import { useRef } from "react";
 
@@ -17,7 +18,10 @@ const DetailTrack = async (props: any) => {
     const resTrack = await sendRequest<IBackendRes<ITrackTop>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/tracks/${params.slug}`,
         method: "GET",
-        nextOption: { caches: "no-store" },
+        nextOption: {
+            // caches: "no-store"
+            next: { tags: ["track-by-id"] },
+        },
     });
 
     const resComment = await sendRequest<IBackendRes<IModelPaginate<IComment>>>(
@@ -32,8 +36,9 @@ const DetailTrack = async (props: any) => {
             },
         }
     );
-    console.log("check res comment", resComment);
-
+    if (!resTrack.data) {
+        notFound();
+    }
     return (
         <div>
             DetailTrack

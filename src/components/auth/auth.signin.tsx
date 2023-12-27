@@ -199,6 +199,7 @@ function AuthSignIn() {
                                     aria-label="github"
                                     color="primary"
                                     size="large"
+                                    onClick={() => signIn("google")}
                                 >
                                     <GoogleIcon fontSize="inherit" />
                                 </IconButton>

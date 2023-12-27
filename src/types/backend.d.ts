@@ -95,11 +95,23 @@ declare global {
     }
 
     interface IResultTrackLike {
-        id: string;
+        _id: string;
         user: string;
         tracks: ITrackLike;
         createAt: string;
         updateAt: string;
         __v: string;
+    }
+
+    interface IPlaylist {
+        _id: string;
+        title: string;
+        isPublic: boolean;
+        user: string;
+        tracks: T[];
+        isDeleted: boolean;
+        createdAt: string;
+        updatedAt: string;
+        __v: number;
     }
 }

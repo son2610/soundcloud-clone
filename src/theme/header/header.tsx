@@ -16,7 +16,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Avatar, Button, CardMedia } from "@mui/material";
+import { Button, CardMedia } from "@mui/material";
 
 import Container from "@mui/material/Container";
 import Link from "next/link";
@@ -264,6 +264,15 @@ export default function Header() {
                             <StyledInputBase
                                 placeholder="Search…"
                                 inputProps={{ "aria-label": "search" }}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === "Enter") {
+                                        if (e?.target?.value) {
+                                            router.push(
+                                                `/search?q=${e.target.value}`
+                                            );
+                                        }
+                                    }
+                                }}
                             />
                         </Search>
                         {/*  */}
